@@ -99,7 +99,7 @@ const categories = [
 const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [activeCategory, setActiveCategory] = useState("Luxury");
+  const [activeCategory, setActiveCategory] = useState("Luxury Fashion");
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [api, setApi] = useState<CarouselApi>();
