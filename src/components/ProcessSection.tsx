@@ -91,6 +91,8 @@ const ProcessSection = () => {
                 src={moodboardImage}
                 alt="Design Process Mood Board"
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="absolute -top-8 -left-8 w-32 h-32 border border-accent/30" />

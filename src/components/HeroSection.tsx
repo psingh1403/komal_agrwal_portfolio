@@ -14,6 +14,8 @@ const HeroSection = () => {
           src={heroImage}
           alt="Fashion Design"
           className="w-full h-full object-cover"
+          loading="eager"
+          {...{ fetchpriority: "high" }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
       </div>
@@ -48,7 +50,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="font-body text-lg md:text-xl text-muted-foreground max-w-lg mb-10"
           >
-            Contemporary Womens Wear | Mens Wear | Sustainable Fashion
+            Haute Couture | Luxury Fashion | Athleisure & Sportswear | Kidswear | Contemporary Office Wear | Beachwear | Boss-Lady Fashion
           </motion.p>
 
           <motion.div
@@ -71,7 +73,8 @@ const HeroSection = () => {
               Contact Me
             </a>
             <a
-              href="#resume"
+              href="/resume.pdf"
+              download="Komal_Agarwal_Resume.pdf"
               className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-foreground/20 text-foreground font-body text-sm tracking-widest uppercase hover:bg-foreground/5 transition-colors"
             >
               <Download size={16} />

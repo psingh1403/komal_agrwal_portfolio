@@ -3,7 +3,6 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Mail, Phone, MapPin, Send, Instagram, Linkedin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import emailjs from "@emailjs/browser";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -27,6 +26,7 @@ const ContactSection = () => {
       const TEMPLATE_ID = "template_h5q2i8f";
       const PUBLIC_KEY = "Z1mVT8MND5WM-I12f";
 
+      const emailjs = (await import("@emailjs/browser")).default;
       await emailjs.send(
         SERVICE_ID,
         TEMPLATE_ID,
@@ -137,7 +137,7 @@ const ContactSection = () => {
               <h3 className="font-display text-xl mb-6">Follow Me</h3>
               <div className="flex gap-4">
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/house_of_komal"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 flex items-center justify-center border border-border hover:border-accent hover:text-accent transition-colors"

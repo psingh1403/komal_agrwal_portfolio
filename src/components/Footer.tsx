@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Logo */}
           <div className="font-display text-2xl tracking-wider">
-            KOMAL AGARWAL
+            KA
           </div>
 
           {/* Quick Links */}
@@ -31,7 +31,7 @@ const Footer = () => {
           {/* Social Icons */}
           <div className="flex gap-4">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/house_of_komal"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-accent transition-colors"
@@ -39,7 +39,7 @@ const Footer = () => {
               <Instagram size={20} />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/komal-agarwal-aaa070227"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-accent transition-colors"

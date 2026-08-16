@@ -23,6 +23,8 @@ const AboutSection = () => {
                 src={designerPortrait}
                 alt="Komal Agarwal - Fashion Designer"
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="absolute -bottom-8 -right-8 w-48 h-48 border border-accent/30" />
@@ -60,7 +62,7 @@ const AboutSection = () => {
 
             <div className="grid grid-cols-2 gap-8">
               <div>
-                <span className="block font-display text-4xl text-accent mb-2">1+</span>
+                <span className="block font-display text-4xl text-accent mb-2">1.5+</span>
                 <span className="font-body text-sm text-muted-foreground tracking-wider uppercase">
                   Years Experience
                 </span>

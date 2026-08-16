@@ -1,198 +1,133 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, X } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Dialog, DialogTitle } from "@/components/ui/dialog";
+import { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
-// casual-wear image imports
-import casualwear1 from "@/assets/casual-wear/casualwear-1.jpeg";
-import casualwear2 from "@/assets/casual-wear/casualwear-2.png";
-import casualwear3 from "@/assets/casual-wear/casualwear-3.jpeg";
-import casualwear4 from "@/assets/casual-wear/casualwear-4.jpeg";
-import casualwear5 from "@/assets/casual-wear/casualwear-5.jpeg";
-import casualwear6 from "@/assets/casual-wear/casualwear-6.png";
+// Import all images dynamically using Vite's glob import
+const imageModules = import.meta.glob<string>("../assets/**/*.{png,jpg,jpeg,PNG,JPG,JPEG}", {
+  eager: true,
+  import: "default",
+});
 
-// ethnic-wear image imports
-import ethnicwear1 from "@/assets/ethnic-wear/ethnicwear-1.jpeg";
-import ethnicwear2 from "@/assets/ethnic-wear/ethnicwear-2.jpeg";
-import ethnicwear3 from "@/assets/ethnic-wear/ethnicwear-3.jpg";
-import ethnicwear4 from "@/assets/ethnic-wear/ethnicwear-4.jpeg";
-import ethnicwear5 from "@/assets/ethnic-wear/ethnicwear-5.jpeg";
-import ethnicwear6 from "@/assets/ethnic-wear/ethnicwear-6.jpeg";
-import ethnicwear7 from "@/assets/ethnic-wear/ethnicwear-7.jpeg";
-import ethnicwear8 from "@/assets/ethnic-wear/ethnicwear-8.jpg";
-import ethnicwear9 from "@/assets/man-ethnic-wear/ethnicwear-9.png";
+const categoryMapping: Record<string, string> = {
+  "luxury": "Luxury Fashion",
+  "rose reverie": "Rose`Reverie",
+  "design to reality": "Design to Reality",
+  "boss lady": "Boss-Lady Fashion",
+  "Sylva": "Sylva",
+  "kids": "Kid's wear",
+};
 
-// sport-wear image imports
-import sportswear1 from "@/assets/sports-wear/sportswear-1.png";
-import sportswear2 from "@/assets/sports-wear/sportswear-2.jpeg";
+const collectionTitles: Record<string, string[]> = {
+  "Luxury Fashion": [
+    "Opulent Velvet Gown", "Golden Silhouette", "Satin Drape", "Royal Threadwork", 
+    "Shimmering Serenade", "Crystal Embellished Look", "Ethereal Silk", "Gilded Glamour", 
+    "Ivory Majesty", "Midnight Luxury", "Velvet Reverie", "Elegance Persona", 
+    "Celestial Gold", "Majestic Satin", "Prestige Weave", "Sovereign Drape",
+    "Gilded Thread", "Plaza Elegance", "Luxe Crimson", "Chiffon Whispers",
+    "Ornate Elegance", "Palatial Gown", "Noble Silk", "Imperial Look",
+    "Regal Silhouette", "Aurora Satin", "Grandeur Blazer"
+  ],
+  "Rose`Reverie": [
+    "Blushing Petals", "Crimson Blossom", "Scarlet Veil", "Rosebud Delight", 
+    "Floral Symphony", "Rosy Twilight", "Petal Soft Gown", "Garden Romance", 
+    "Botanical Whisper", "Spring Meadow", "Rose Infused Silk", "Wildrose Dream", 
+    "Coral Bloom", "Meadow Muse", "Blossom Breeze", "Enchanted Rose"
+  ],
+  "Design to Reality": [
+    "Sketch to Stitch", "Concept Silhouette", "Drafted Elegance", "Pattern Play", 
+    "Canvas Dress", "Monochrome Concept", "Geometric Drape", "Architectural Fit", 
+    "Paper to Fabric", "Experimental Form"
+  ],
+  "Boss-Lady Fashion": [
+    "Power Blazer", "Pinstripe Authority", "Structured Command", "Executive Silk", 
+    "Corporate Tailored Suit", "Monochrome Maven", "Modern Trench"
+  ],
+  "Sylva": [
+    "Forest Whispers", "Earth Drape", "Emerald Canopy", "Leafy Harmony", "Mossy Path"
+  ],
+  "Kid's wear": [
+    "Little Sunshine", "Playful Pastels", "Tiny Trendsetter", "Whimsical Denim", 
+    "Joyful Overalls", "Mini Chic", "Cheerful Cotton"
+  ]
+};
 
-// evening-wear image imports
-import eveningwear1 from "@/assets/evening-wear/eveningwear-1.jpeg";
+// Group by folder/category first, then generate collection
+const groupedImages: Record<string, string[]> = {};
+Object.entries(imageModules).forEach(([path, resolvedPath]) => {
+  const parts = path.split('/');
+  const folder = parts[parts.length - 2];
+  if (folder in categoryMapping) {
+    const category = categoryMapping[folder];
+    if (!groupedImages[category]) {
+      groupedImages[category] = [];
+    }
+    groupedImages[category].push(resolvedPath);
+  }
+});
 
+const collections: { id: number; title: string; category: string; year: string; image: string }[] = [];
+let globalId = 1;
 
-
-const collections = [
-  // casualwear
-  {
-    id: 1,
-    title: "Casual Charm",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear1,
-  },
-  {
-    id: 2,
-    title: "Everyday Elegance",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear2,
-  },
-  {
-    id: 3,
-    title: "Urban Flow",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear3,
-  },
-  {
-    id: 4,
-    title: "Chic Ease",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear4,
-  },
-
-  // ethnicwear
-  {
-    id: 5,
-    title: "Timeless Traditions",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear1,
-  },
-  {
-    id: 6,
-    title: "Ethereal Ethnic",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear2,
-  },
-  {
-    id: 7,
-    title: "Royal Roots",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear3,
-  },
-  {
-    id: 8,
-    title: "Classic Counture",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear4,
-  },
-  {
-    id: 9,
-    title: "Mordern Mehfil",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear5,
-  },
-
-  // casualwear
-  {
-    id: 10,
-    title: "Effortless Grace",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear5,
-  },
-  {
-    id: 11,
-    title: "Fesion Finesse",
-    category: "Casual Wear",
-    year: "2024",
-    image: casualwear6,
-  },
-
-  // sportwear
-  {
-    id: 12,
-    title: "Sporty Sophistication",
-    category: "Sports Wear",
-    year: "2024",
-    image: sportswear1,
-  },
-  {
-    id: 13,
-    title: "Athletic Elegance",
-    category: "Sports Wear",
-    year: "2024",
-    image: sportswear2,
-  },
-
-  // eveningwear
-  {
-    id: 14,
-    title: "Glamour Gala",
-    category: "Evening Wear",
-    year: "2024",
-    image: eveningwear1,
-  },
-
-  {
-    id: 15,
-    title: "Mordern Mehfil 1",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear6,
-  },
-  {
-    id: 16,
-    title: "Mordern Mehfil 2",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear7,
-  },
-  {
-    id: 17,
-    title: "Mordern Mehfil 3",
-    category: "Ethnic Wear",
-    year: "2024",
-    image: ethnicwear8,
-  },
-
-  {
-    id: 18,
-    title: "Mordern Mehfil",
-    category: "Men's Ethnic Wear",
-    year: "2024",
-    image: ethnicwear9,
-  },
-];
+Object.entries(groupedImages).forEach(([category, images]) => {
+  images.forEach((img, idx) => {
+    const categoryTitles = collectionTitles[category] || [];
+    const title = categoryTitles[idx] || `${category} Look ${String(idx + 1).padStart(2, '0')}`;
+    
+    collections.push({
+      id: globalId++,
+      title,
+      category,
+      year: "2026",
+      image: img
+    });
+  });
+});
 
 const categories = [
-  "All",
-  "Casual Wear",
-  "Evening Wear",
-  "Ethnic Wear",
-  "Sports Wear",
-  "Street Wear",
-  "Party Wear",
-  "Formal Wear",
-  "Men's Ethnic Wear",
+  "Luxury Fashion",
+  "Rose`Reverie",
+  "Design to Reality",
+  "Boss-Lady Fashion",
+  "Sylva",
+  "Kid's wear",
 ];
 
 const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState("Luxury");
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [api, setApi] = useState<CarouselApi>();
 
-  const filteredCollections =
-    activeCategory === "All"
-      ? collections
-      : collections.filter((c) => c.category === activeCategory);
+  const filteredCollections = collections.filter(
+    (c) => c.category === activeCategory
+  );
+
+  const selectedIndex = selectedItemId !== null
+    ? filteredCollections.findIndex(item => item.id === selectedItemId)
+    : 0;
+
+  useEffect(() => {
+    if (!api) return;
+
+    // Embla size/reInit must run after the dialog's CSS transition finishes
+    const timer = setTimeout(() => {
+      api.reInit();
+      if (selectedItemId !== null) {
+        const index = filteredCollections.findIndex(item => item.id === selectedItemId);
+        if (index !== -1) {
+          api.scrollTo(index, true);
+        }
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [api, selectedItemId, filteredCollections]);
 
   return (
     <section id="portfolio" className="py-32 bg-background" ref={ref}>
@@ -248,28 +183,19 @@ const PortfolioSection = () => {
               transition={{ duration: 0.6, delay: 0.1 * index }}
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => setSelectedItemId(item.id)}
               className="group cursor-pointer"
             >
-              <div className="relative aspect-[3/4] overflow-hidden mb-6">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* <div
-                  className={`absolute inset-0 bg-background/80 flex items-center justify-center transition-opacity duration-500 ${
-                    hoveredItem === item.id ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <div className="text-center p-6">
-                    <p className="font-body text-sm text-muted-foreground mb-4">
-                      {item.description}
-                    </p>
-                    <span className="inline-flex items-center gap-2 font-body text-sm tracking-widest uppercase text-accent">
-                      View Collection <ArrowUpRight size={16} />
-                    </span>
-                  </div>
-                </div> */}
+              <div className="relative aspect-[3/4] overflow-hidden mb-6 border border-accent/20 p-2 bg-background/50 transition-all duration-500 group-hover:border-accent">
+                <div className="w-full h-full overflow-hidden relative">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
               </div>
               <div className="flex justify-between items-start">
                 <div>
@@ -285,6 +211,63 @@ const PortfolioSection = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Dynamic Image Slider Modal */}
+        <Dialog open={selectedItemId !== null} onOpenChange={(open) => { if (!open) setSelectedItemId(null); }}>
+          <DialogPrimitive.Portal>
+            {/* Custom Overlay with high-end glassmorphism */}
+            <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl transition-all duration-300" />
+            
+            {/* Custom Content container: non-grid, full viewport flex center */}
+            <DialogPrimitive.Content className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 outline-none">
+              
+              <div className="relative w-full max-w-5xl bg-neutral-950/90 border border-neutral-800 p-6 md:p-10 shadow-2xl flex flex-col items-center justify-center max-h-[90vh] overflow-y-auto">
+                
+                {/* Screen reader title */}
+                <DialogTitle className="sr-only">Large View Collection</DialogTitle>
+                
+                {/* Custom Close Button */}
+                <DialogPrimitive.Close className="absolute right-4 top-4 text-neutral-400 hover:text-white transition-colors cursor-pointer z-50">
+                  <X className="h-6 w-6" />
+                  <span className="sr-only">Close</span>
+                </DialogPrimitive.Close>
+
+                {selectedItemId !== null && (
+                  <Carousel setApi={setApi} opts={{ startIndex: selectedIndex }} className="w-full relative px-4 md:px-10">
+                    <CarouselContent className="flex">
+                      {filteredCollections.map((item) => (
+                        <CarouselItem key={item.id} className="min-w-0 shrink-0 grow-0 basis-full flex flex-col items-center justify-center gap-6">
+                          {/* Image Box */}
+                          <div className="relative w-full max-w-sm aspect-[3/4] border border-accent/20 p-2 bg-neutral-900/40 flex-shrink-0 flex items-center justify-center">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          
+                          {/* Text Info (Aligned at the bottom of the image) */}
+                          <div className="flex flex-col items-center text-center max-w-lg w-full px-4">
+                            <h3 className="font-display text-3xl text-white font-light mb-1">
+                              {item.title}
+                            </h3>
+                            <span className="font-body text-sm text-neutral-400 mb-3">
+                              Collection Year: {item.year}
+                            </span>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    
+                    {/* Position navigation controls inside the dialog card, but at absolute side margins */}
+                    <CarouselPrevious className="absolute left-2 md:left-[-40px] top-1/2 -translate-y-1/2 h-10 w-10 bg-neutral-900/90 border border-accent/20 text-accent hover:bg-accent hover:text-accent-foreground rounded-none transition-colors z-40" />
+                    <CarouselNext className="absolute right-2 md:right-[-40px] top-1/2 -translate-y-1/2 h-10 w-10 bg-neutral-900/90 border border-accent/20 text-accent hover:bg-accent hover:text-accent-foreground rounded-none transition-colors z-40" />
+                  </Carousel>
+                )}
+              </div>
+            </DialogPrimitive.Content>
+          </DialogPrimitive.Portal>
+        </Dialog>
       </div>
     </section>
   );

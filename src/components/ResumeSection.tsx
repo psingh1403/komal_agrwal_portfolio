@@ -140,7 +140,8 @@ const ResumeSection = () => {
             Experience & <span className="italic text-accent">Skills</span>
           </h2>
           <a
-            href="#"
+            href="/resume.pdf"
+            download="Komal_Agarwal_Resume.pdf"
             className="inline-flex items-center gap-3 px-8 py-4 bg-accent text-accent-foreground font-body text-sm tracking-widest uppercase hover:bg-accent/90 transition-colors mt-6"
           >
             <Download size={16} />

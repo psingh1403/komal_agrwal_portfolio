@@ -15,6 +15,7 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -35,7 +36,7 @@ const Navigation = () => {
       >
         <div className="container mx-auto px-6 flex items-center justify-between">
           <a href="#home" className="font-display text-2xl tracking-wider text-foreground">
-            KOMAL
+            KA
           </a>
 
           {/* Desktop Navigation */}
@@ -72,7 +73,7 @@ const Navigation = () => {
           >
             <div className="container mx-auto px-6 py-6">
               <div className="flex justify-between items-center mb-16">
-                <span className="font-display text-2xl tracking-wider">KOMAL</span>
+                <span className="font-display text-2xl tracking-wider">KA</span>
                 <button onClick={() => setIsMobileMenuOpen(false)}>
                   <X size={24} />
                 </button>
