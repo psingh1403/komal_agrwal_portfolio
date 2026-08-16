@@ -7,7 +7,7 @@ import { Dialog, DialogTitle } from "@/components/ui/dialog";
 import { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 // Import all images dynamically using Vite's glob import
-const imageModules = import.meta.glob<string>("../assets/**/*.{png,jpg,jpeg,PNG,JPG,JPEG}", {
+const imageModules = import.meta.glob<string>("../assets/**/*.{png,jpg,jpeg,PNG,JPG,JPEG,webp,WEBP}", {
   eager: true,
   import: "default",
 });
